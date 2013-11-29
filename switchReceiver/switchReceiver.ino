@@ -20,23 +20,23 @@ void setup()
 
 void loop()
 {
-  unsigned char data = 0;
+  unsigned char data[2] = {0, 0};
   radioHop(0);
   if(LOW == digitalRead(RADIO_PIN_IRQ))
   {
     // A packet arrived: read it
-    radioReadPacket(&data);
+    radioReadPacket(data);
     radioAckPacket();
 #ifdef DEBUG
       Serial.print("Data: ");
-      Serial.println(data);
+      Serial.println(data[0]);
 #endif
     while(0 == radioRxFifoEmpty())
     {
-      radioReadPacket(&data);
+      radioReadPacket(data);
 #ifdef DEBUG
       Serial.print("Data: ");
-      Serial.println(data);
+      Serial.println(data[0]);
 #endif
     }
     radioHop(1);
