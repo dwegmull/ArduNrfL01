@@ -10,12 +10,52 @@ void setup()
 #ifdef DEBUG  
   // Debug stuff
   Serial.begin(9600);
+#else
+  pinMode(0, OUTPUT);
+  pinMode(1, OUTPUT);
 #endif
   
+  pinMode(2, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+
   rInit.primRx = 1;
   rInit.payloadSize = PAYLOAD_SIZE;
   rInit.ackSize = ACK_SIZE;
   radioInit(rInit);
+}
+
+void update_output(unsigned char *data)
+{
+#ifdef DEBUG
+      Serial.print("Data: ");
+      Serial.print(data[0]);
+      Serial.print(" / ");
+      Serial.println(data[1]);
+#else
+      PORTD = data[0];
+      if(data[1] & 0x01)
+      {
+        digitalWrite(8, HIGH);
+      }
+      else
+      {
+        digitalWrite(8, LOW);
+      }
+      if(data[1] & 0x02)
+      {
+        digitalWrite(9, HIGH);
+      }
+      else
+      {
+        digitalWrite(9, LOW);
+      }
+#endif
 }
 
 void loop()
@@ -25,19 +65,16 @@ void loop()
   if(LOW == digitalRead(RADIO_PIN_IRQ))
   {
     // A packet arrived: read it
-    radioReadPacket(data);
     radioAckPacket();
-#ifdef DEBUG
-      Serial.print("Data: ");
-      Serial.println(data[0]);
-#endif
+    radioReadPacket(data);
+    update_output(data);
     while(0 == radioRxFifoEmpty())
     {
-      radioReadPacket(data);
 #ifdef DEBUG
-      Serial.print("Data: ");
-      Serial.println(data[0]);
+      Serial.print(" Second ");
 #endif
+      radioReadPacket(data);
+      update_output(data);
     }
     radioHop(1);
   }

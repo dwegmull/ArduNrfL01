@@ -26,8 +26,6 @@ void radioInit(radioInit_T init)
   digitalWrite(RADIO_PIN_IRQ, 1);
   // Setup the SPI interface
   SPCR = 0x50; // Enable in Master mode. CPOL and CPHA are both low
-  Serial.println("Start of init");
-  
   // Configure the chip and the local data
   payloadSize = init.payloadSize;
   ackSize = init.ackSize;
@@ -170,7 +168,7 @@ byte radioRxFifoEmpty(void)
   return(rxStatus & RX_EMPTY);
 }
 
-void radioSendPacket(unsigned char *data)
+byte radioSendPacket(unsigned char *data)
 {
   byte radioStatus;
   byte TxCnt;
@@ -198,13 +196,14 @@ void radioSendPacket(unsigned char *data)
     if(radioStatus & TX_DS)
     {
       // All done!
-      return;
+      return(1);
     }
     delayMicroseconds(130); // Wait for the PLL to settle on the new channel
     // Clear any pending interrupt
     radioStatus = TX_DS | MAX_RT | RX_DR;
     RadioAccessRegister(W_REGISTER | STATUS, &radioStatus, 1);
   }
+  return(0);
 }
 
 void radioReadPacket(unsigned char *data)

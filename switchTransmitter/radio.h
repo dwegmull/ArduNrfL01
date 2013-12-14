@@ -105,7 +105,6 @@ typedef struct
 
 // Functions
 void radioInit(radioInit_T init);
-void radioSendPacket(unsigned char *data);
 void radioReadPacket(unsigned char *data);
 void radioHop(boolean hopNow);
 #endif // RADIO_H
