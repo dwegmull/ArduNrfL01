@@ -115,6 +115,27 @@ unsigned char RadioAccessRegister(unsigned char commandWord,
   return(radioStatus);
 }
 
+void radioSetPower(unsigned char onOff)
+{
+  if(0 != onOff)
+  {
+    if(primRx)
+    {
+      onOff = MASK_TX_DS | MASK_MAX_RT | EN_CRC | CRCO | PRIM_RX | PWR_UP;
+    }
+    else
+    {
+      onOff = MASK_RX_DR | EN_CRC | CRCO | PWR_UP;
+    }
+    RadioAccessRegister(W_REGISTER | CONFIG, &onOff, 1);
+    // Now wait 2mS for the crystal to stabilize
+    delay(2);
+  }
+  else
+  {
+    RadioAccessRegister(W_REGISTER | CONFIG, &onOff, 1);
+  }
+}
 
 void radioSetChannel(unsigned char channel)
 {

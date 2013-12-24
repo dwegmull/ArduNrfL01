@@ -115,6 +115,27 @@ unsigned char RadioAccessRegister(unsigned char commandWord,
   return(radioStatus);
 }
 
+void radioSetPower(unisgned char onOff)
+{
+  if(0 != onOff)
+  {
+    if(primRx)
+    {
+      onOff = MASK_TX_DS | MASK_MAX_RT | EN_CRC | CRCO | PRIM_RX | PWR_UP;
+    }
+    else
+    {
+      onOff = = MASK_RX_DR | EN_CRC | CRCO | PWR_UP;
+    }
+    RadioAccessRegister(W_REGISTER | CONFIG, onOff, 1);
+    // Now wait 2mS for the crystal to stabilize
+    Delay(2);
+  }
+  else
+  {
+    RadioAccessRegister(W_REGISTER | CONFIG, onOff, 1);
+  }
+}
 
 void radioSetChannel(unsigned char channel)
 {
@@ -175,6 +196,8 @@ byte radioSendPacket(unsigned char *data)
   // Clear any pending interrupt
   radioStatus = TX_DS | MAX_RT | RX_DR;
   RadioAccessRegister(W_REGISTER | STATUS, &radioStatus, 1);
+  // Flush the FIFO
+  RadioAccessRegister(FLUSH_TX, &radioStatus, 0);
   // Load the packet into the radio FIFO
   RadioAccessRegister(W_TX_PAYLOAD, data, payloadSize);
   // Power up the radio and send the packet
