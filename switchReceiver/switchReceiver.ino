@@ -1,4 +1,4 @@
-#define DEBUG
+//#define DEBUG
 #include "radio.h"
 
 #define PAYLOAD_SIZE 2

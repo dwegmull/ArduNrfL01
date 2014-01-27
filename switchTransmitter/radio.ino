@@ -108,7 +108,14 @@ unsigned char RadioAccessRegister(unsigned char commandWord,
   radioStatus = exchangeByte(commandWord);
   while(argSize--)
   {
-    *data = exchangeByte(*data);
+    if(W_TX_PAYLOAD == commandWord)
+    {
+      exchangeByte(*data); // Don't overwrite the payload!
+    }
+    else
+    {
+      *data = exchangeByte(*data);
+    }
     data++;
   }
   digitalWrite(RADIO_PIN_CSN, 1);

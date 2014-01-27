@@ -63,7 +63,7 @@ void loop()
 {
   // Read 10 input pins into two bytes.
   switches[0] = PIND;
-  switches[1] = PINB & 0x03;    
+  switches[1] = PINB & 0x03;   
   // Try to send the data 4 times before giving up.
   // Each try is done on four frequencies by the library.
   cnt = 4;

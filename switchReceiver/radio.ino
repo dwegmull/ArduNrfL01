@@ -108,14 +108,21 @@ unsigned char RadioAccessRegister(unsigned char commandWord,
   radioStatus = exchangeByte(commandWord);
   while(argSize--)
   {
-    *data = exchangeByte(*data);
+    if(W_TX_PAYLOAD == commandWord)
+    {
+      exchangeByte(*data); // Don't overwrite the payload!
+    }
+    else
+    {
+      *data = exchangeByte(*data);
+    }
     data++;
   }
   digitalWrite(RADIO_PIN_CSN, 1);
   return(radioStatus);
 }
 
-void radioSetPower(unisgned char onOff)
+void radioSetPower(unsigned char onOff)
 {
   if(0 != onOff)
   {
@@ -125,15 +132,15 @@ void radioSetPower(unisgned char onOff)
     }
     else
     {
-      onOff = = MASK_RX_DR | EN_CRC | CRCO | PWR_UP;
+      onOff = MASK_RX_DR | EN_CRC | CRCO | PWR_UP;
     }
-    RadioAccessRegister(W_REGISTER | CONFIG, onOff, 1);
+    RadioAccessRegister(W_REGISTER | CONFIG, &onOff, 1);
     // Now wait 2mS for the crystal to stabilize
-    Delay(2);
+    delay(2);
   }
   else
   {
-    RadioAccessRegister(W_REGISTER | CONFIG, onOff, 1);
+    RadioAccessRegister(W_REGISTER | CONFIG, &onOff, 1);
   }
 }
 
