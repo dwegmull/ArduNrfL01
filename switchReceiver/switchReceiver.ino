@@ -23,7 +23,11 @@ void setup()
   pinMode(7, OUTPUT);
   pinMode(8, OUTPUT);
   pinMode(9, OUTPUT);
-
+  // All solenoids are closed until we connect
+  PORTD = 0x00;
+  digitalWrite(8, LOW);
+  digitalWrite(9, LOW);
+  
   rInit.primRx = 1;
   rInit.payloadSize = PAYLOAD_SIZE;
   rInit.ackSize = ACK_SIZE;
@@ -38,14 +42,17 @@ void update_output(unsigned char *data)
       Serial.print(" / ");
       Serial.println(data[1]);
 #else
-      PORTD = data[0];
+      PORTD = data[0] ^ 0x61;// 0, 5 and 6 are inverted to compensate
+                             // for switch wiring.
+      // SWAPPED to compensate for switch wiring
+      // on the transmitter.
       if(data[1] & 0x01)
       {
-        digitalWrite(8, HIGH);
+        digitalWrite(8, LOW);
       }
       else
       {
-        digitalWrite(8, LOW);
+        digitalWrite(8, HIGH);
       }
       if(data[1] & 0x02)
       {
