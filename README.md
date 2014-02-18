@@ -12,4 +12,5 @@ In Debug mode on the receiver prints out the data to the UART instead of outputi
 NOTE: The transmitter is designed to be powered directly from two alcaline batteries. In order to acheive this, a 3.3V 
       Arduino must be used. In addition, the voltage regulator on the board must be removed and bypassed.
       The voltage regulator on the RF board must also be removed and bypassed
-      Finaly, the AVR processor configuration registers must be altered to allow operation down to 1.8V
+      Finaly, the AVR processor configuration registers must be altered to allow operation down to 1.8V. This is done by
+      using AVRdude with the following options: -U lfuse:w:0xe2:m -U hfuse:w:0xda:m -U efuse:w:0x06:m
